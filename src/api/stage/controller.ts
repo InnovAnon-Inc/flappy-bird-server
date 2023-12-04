@@ -12,6 +12,7 @@ function generateStage(count: number): void {
         stage.push({
             index: stage.length,
             location: Math.random(),
+	    // TODO include info about crypto badges so client can display them on pipes
         });
     }
 }
