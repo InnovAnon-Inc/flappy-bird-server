@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dolanmiu/flappy-bird-server.git"
+    "url": "git+https://github.com/InnovAnon-Inc/flappy-bird-server.git"
   },
   "keywords": [
     "Flappy",
@@ -22,9 +22,9 @@
   "license": "MIT",
   "engines": { "node": ">=16.x" },
   "bugs": {
-    "url": "https://github.com/dolanmiu/flappy-bird-server/issues"
+    "url": "https://github.com/InnovAnon-Inc/flappy-bird-server/issues"
   },
-  "homepage": "https://github.com/dolanmiu/flappy-bird-server#readme",
+  "homepage": "https://github.com/InnovAnon-Inc/flappy-bird-server#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
