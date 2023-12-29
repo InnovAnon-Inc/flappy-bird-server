@@ -20,6 +20,15 @@ export class SocketIOManager {
         this.io.on("connection", (socket) => {
             logger.info(`User ${socket.id} connected. With name: ${socket.handshake.query.name}`);
 
+
+            const playerName     = escape(socket.handshake.query.name);
+	    const playerColor    = escape(socket.handshake.query.color);
+	    const playerPassword = escape(socket.handshake.query.password);
+	    const gameID         = "12";
+
+
+
+
             socket.handshake.query.name = socket.handshake.query.name ? socket.handshake.query.name.substring(0, 30) : "Un-named";
 
             this.sendChatMessage(`User ${socket.handshake.query.name} connected.`, "Announcement");
