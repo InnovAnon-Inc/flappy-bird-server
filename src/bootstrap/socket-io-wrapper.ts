@@ -26,6 +26,11 @@ export class SocketIOManager {
 	    const playerPassword = escape(socket.handshake.query.password);
 	    const gameID         = "12";
 
+            // TODO get playerID from REST API `user.id` using playerName
+	    // TODO get codeSecret from REST API `code.secret` using gameID, playerID
+	    // TODO check whether playerPassword matches codeSecret
+	    // TODO get codeRemaining from REST API `code.remaining` using gameID, playerID
+	    // TODO check whether codeRemaining is positive
 
 
 
