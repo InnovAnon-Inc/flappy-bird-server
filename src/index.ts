@@ -6,6 +6,37 @@ import { ApplicationWrapper } from "./bootstrap/application-wrapper";
 import { SocketIOManager } from "./bootstrap/socket-io-wrapper";
 import { IConfig, ProductionConfig } from "./config/index";
 
+
+
+
+
+
+
+
+
+import * as http from "http";
+import * as dotenv from "dotenv";
+//import { SocketIOManager } from "./bootstrap/socket-io-wrapper";
+//import { ApplicationWrapper } from "./bootstrap/application-wrapper";
+//import { fetchGameId } from "./api/game";
+
+// Load environment variables from .env file
+dotenv.config();
+
+// Get the API key from environment variables
+const apiKey = process.env.API_KEY;
+
+
+
+
+
+
+
+
+
+
+
+
 let config: IConfig = new ProductionConfig();
 
 let appWrapper = new ApplicationWrapper(config);
