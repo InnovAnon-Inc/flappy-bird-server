@@ -17,6 +17,7 @@ Go to [https://InnovAnon-Inc.github.io/flappy-bird-client](https://InnovAnon-Inc
 2. run `npm install`
 3. run `npm start`
 4. Do the exact same for the [client](https://github.com/InnovAnon-Inc/flappy-bird-client). This is only the server!
+5. create a .env with a supabase API_KEY and the GAME_NAME
 
 Made with ♥ by Dolan Miu
 

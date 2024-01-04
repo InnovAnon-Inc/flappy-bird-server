@@ -24,7 +24,71 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // Get the API key from environment variables
+const supabaseUrl = "https://byyokbedkfrhtftkqawp.supabase.co/rest/v1/"
+
 const apiKey = process.env.API_KEY;
+logger.info('api key: %s', apiKey)
+
+const gameName = process.env.GAME_NAME;
+logger.info('game name: %s', gameName)
+
+
+
+
+
+import { createClient } from "@supabase/supabase-js";
+
+// Create a Supabase client
+const supabase = createClient(supabaseUrl, apiKey);
+
+// Function to get the game ID corresponding to a game name
+async function getGameId(gameName: string): Promise<number | null> {
+  try {
+    // Query the 'game' table and select the 'id' column where 'name' is equal to the game name
+    const { data, error } = await supabase
+      .from("game")
+      .select("id")
+      .eq("name", gameName)
+      .single();
+
+    if (error) {
+      console.error("Error retrieving game ID:", error);
+      return null;
+    }
+
+    if (!data) {
+      console.error("Game not found:", gameName);
+      return null;
+    }
+
+    return data.id;
+  } catch (error) {
+    console.error("Error retrieving game ID:", error.message);
+    return null;
+  }
+}
+
+// Global variable to store the game ID
+let globalGameId: number | null = null;
+
+// Usage example
+getGameId(gameName)
+  .then((gameId) => {
+    if (gameId !== null) {
+	    globalGameId = gameId; // Set the global variable with the retrieved game ID
+      console.log("Game ID:", globalGameId); // Log the retrieved game ID
+    }
+  })
+  .catch((error) => {
+    console.error("Error:", error.message);
+  });
+
+
+
+
+
+
+
 
 
 
