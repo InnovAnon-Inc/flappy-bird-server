@@ -12,8 +12,9 @@ interface IPlayer {
 export class SocketIOManager {
     private io: SocketIO.Server;
 
-    constructor(private server: http.Server) {
+    constructor(private server: http.Server, private game: data) {
         this.io = socketIo.listen(this.server);
+	this.game = game;
     }
 
     public start(): void {

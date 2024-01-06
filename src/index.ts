@@ -24,14 +24,13 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // Get the API key from environment variables
-const supabaseUrl = "https://byyokbedkfrhtftkqawp.supabase.co/rest/v1/"
+const supabaseUrl = "https://byyokbedkfrhtftkqawp.supabase.co"
 
-const apiKey = process.env.API_KEY;
+const apiKey = process.env.API_KEY.trim();
 logger.info('api key: %s', apiKey)
 
-const gameName = process.env.GAME_NAME;
+const gameName = process.env.GAME_NAME.trim();
 logger.info('game name: %s', gameName)
-
 
 
 
@@ -43,46 +42,56 @@ const supabase = createClient(supabaseUrl, apiKey);
 
 // Function to get the game ID corresponding to a game name
 async function getGameId(gameName: string): Promise<number | null> {
+  console.info('game name: ', gameName)
   try {
     // Query the 'game' table and select the 'id' column where 'name' is equal to the game name
-    const { data, error } = await supabase
+    //const { data, error } = await supabase
+    let { data: game, error } = await supabase
       .from("game")
-      .select("id")
+      .select("*")
+      //.select("id")
       .eq("name", gameName)
       .single();
 
+    //console.info('data (1): ', data)
+    console.info('game: ', game);
+
     if (error) {
-      console.error("Error retrieving game ID:", error);
+      console.error("Error retrieving game ID (1):", error);
       return null;
     }
 
-    if (!data) {
+    //if (!data) {
+    //  console.error("Game not found:", gameName);
+    //  return null;
+    //}
+    if (!game) {
       console.error("Game not found:", gameName);
       return null;
     }
 
-    return data.id;
+    //console.info('data (2): ', data)
+    console.info('game (2): ', game);
+
+    //return data.id;
+    //return null;
+    //return game.id;
+    return game;
   } catch (error) {
-    console.error("Error retrieving game ID:", error.message);
+    console.error("Error retrieving game ID (2):", error.message);
     return null;
   }
 }
 
 // Global variable to store the game ID
-let globalGameId: number | null = null;
+//let globalGameId: number | null = null;
 
 // Usage example
 getGameId(gameName)
-  .then((gameId) => {
-    if (gameId !== null) {
-	    globalGameId = gameId; // Set the global variable with the retrieved game ID
-      console.log("Game ID:", globalGameId); // Log the retrieved game ID
-    }
-  })
-  .catch((error) => {
-    console.error("Error:", error.message);
-  });
-
+  .then((game) => {
+    if (game !== null) {
+	    //globalGameId = gameId; // Set the global variable with the retrieved game ID
+	  	let gameId = game.id
 
 
 
@@ -104,7 +113,7 @@ getGameId(gameName)
 let config: IConfig = new ProductionConfig();
 
 let appWrapper = new ApplicationWrapper(config);
-let socketIOWrapper = new SocketIOManager(appWrapper.Server);
+let socketIOWrapper = new SocketIOManager(appWrapper.Server, game);
 
 appWrapper.configure((app) => {
     app.use(cors());
@@ -127,3 +136,17 @@ process.on("uncaughtException", (exception: Error) => {
     logger.info(`Server stopped because of: ${exception.message}`);
     throw exception;
 });
+
+
+
+
+
+
+
+      //console.log("Game ID:", globalGameId); // Log the retrieved game ID
+      console.log("Game ID:", gameId); // Log the retrieved game ID
+    }
+  })
+  .catch((error) => {
+    console.error("Error:", error.message);
+  });
