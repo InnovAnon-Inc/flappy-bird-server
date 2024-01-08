@@ -9,10 +9,20 @@ interface IPlayer {
     color: number;
 }
 
+
+
+interface Game {
+  id: number;
+  // Add other columns from the 'game' table
+  // column1: string;
+  // column2: number;
+  // ...
+}
+
 export class SocketIOManager {
     private io: SocketIO.Server;
 
-    constructor(private server: http.Server, private game: data) {
+    constructor(private server: http.Server, private game: Game) {
         this.io = socketIo.listen(this.server);
 	this.game = game;
     }
@@ -25,7 +35,7 @@ export class SocketIOManager {
             const playerName     = escape(socket.handshake.query.name);
 	    const playerColor    = escape(socket.handshake.query.color);
 	    const playerPassword = escape(socket.handshake.query.password);
-	    const gameID         = "12";
+	    const gameID         = this.game.id;
 
             // TODO get playerID from REST API `user.id` using playerName
 	    // TODO get codeSecret from REST API `code.secret` using gameID, playerID

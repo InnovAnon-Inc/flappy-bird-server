@@ -35,13 +35,26 @@ logger.info('game name: %s', gameName)
 
 
 
+
+interface Game {
+  id: number;
+  // Add other columns from the 'game' table
+  // column1: string;
+  // column2: number;
+  // ...
+}
+
+
+
+
+
 import { createClient } from "@supabase/supabase-js";
 
 // Create a Supabase client
 const supabase = createClient(supabaseUrl, apiKey);
 
 // Function to get the game ID corresponding to a game name
-async function getGameId(gameName: string): Promise<number | null> {
+async function getGameId(gameName: string): Promise<Game | null> {
   console.info('game name: ', gameName)
   try {
     // Query the 'game' table and select the 'id' column where 'name' is equal to the game name
@@ -54,7 +67,7 @@ async function getGameId(gameName: string): Promise<number | null> {
       .single();
 
     //console.info('data (1): ', data)
-    console.info('game: ', game);
+    //console.info('game: ', game);
 
     if (error) {
       console.error("Error retrieving game ID (1):", error);
