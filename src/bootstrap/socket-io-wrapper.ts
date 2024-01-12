@@ -45,9 +45,12 @@ export class SocketIOManager {
 	    const playerColor    = escape(socket.handshake.query.color);
 	    console.info("Player Color:", playerColor)
 	    // TODO this should not be undefined
-	    const playerPassword = escape(socket.handshake.query.secret);
+	    const playerPassword = escape(socket.handshake.query.password);
 	    //assert(playerPassword)
 	    console.info("Player Password:", playerPassword)
+	    console.info("Secret:", socket.handshake.query.secret)
+	    console.info("Test:", socket.handshake.query.test)
+	    console.info("Foo:", socket.handshake.query.foo)
 	    const gameID         = this.game.id;
 	    console.info("Game ID:", gameID)
 
