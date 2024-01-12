@@ -11,6 +11,13 @@ interface IPlayer {
 
 
 
+import * as dotenv from "dotenv";
+dotenv.config();
+const supabaseUrl = "https://byyokbedkfrhtftkqawp.supabase.co"
+const apiKey = process.env.API_KEY.trim();
+const gameName = process.env.GAME_NAME.trim();
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(supabaseUrl, apiKey);
 interface Game {
   id: number;
   // Add other columns from the 'game' table
@@ -28,20 +35,101 @@ export class SocketIOManager {
     }
 
     public start(): void {
-        this.io.on("connection", (socket) => {
+        //this.io.on("connection", (socket) => {
+        this.io.on("connection", async (socket) => {
             logger.info(`User ${socket.id} connected. With name: ${socket.handshake.query.name}`);
 
 
             const playerName     = escape(socket.handshake.query.name);
+	    console.info("Player Name:", playerName)
 	    const playerColor    = escape(socket.handshake.query.color);
-	    const playerPassword = escape(socket.handshake.query.password);
+	    console.info("Player Color:", playerColor)
+	    // TODO this should not be undefined
+	    const playerPassword = escape(socket.handshake.query.secret);
+	    assert(playerPassword)
+	    console.info("Player Password:", playerPassword)
 	    const gameID         = this.game.id;
+	    console.info("Game ID:", gameID)
 
             // TODO get playerID from REST API `user.id` using playerName
 	    // TODO get codeSecret from REST API `code.secret` using gameID, playerID
 	    // TODO check whether playerPassword matches codeSecret
 	    // TODO get codeRemaining from REST API `code.remaining` using gameID, playerID
 	    // TODO check whether codeRemaining is positive
+	    
+		try {
+        // Step 1: Get playerID from REST API using playerName
+        const { data: playerData, error: getPlayerIdError } = await supabase
+          .from("user")
+          .select("id")
+          .eq("name", playerName)
+          .single();
+        const playerID = playerData?.id;
+
+        if (getPlayerIdError) {
+          console.error("Error retrieving player ID:", getPlayerIdError);
+          return;
+        }
+          console.info("Player ID:", playerID)
+
+        // Step 2: Get codeSecret from REST API using gameID and playerID
+        const { data: codeSecretData, error: getCodeSecretError } = await supabase
+          .from("code")
+          .select("secret")
+          .eq("game_id", gameID)
+          .eq("user_id", playerID)
+          .single();
+        const codeSecret = codeSecretData?.secret;
+
+        if (getCodeSecretError) {
+          console.error("Error retrieving code secret:", getCodeSecretError);
+          return;
+        }
+	console.info("Secret: ", codeSecret)
+
+        // Step 3: Check whether playerPassword matches codeSecret
+        const isPasswordValid = playerPassword === codeSecret;
+	console.info("is password valid:", isPasswordValid)
+
+        // Step 4: Get codeRemaining from REST API using gameID and playerID
+        const { data: codeRemainingData, error: getCodeRemainingError } = await supabase
+          .from("code")
+          .select("remaining")
+          .eq("game_id", gameID)
+          .eq("user_id", playerID)
+          .single();
+        const codeRemaining = codeRemainingData?.remaining;
+
+        if (getCodeRemainingError) {
+          console.error("Error retrieving code remaining:", getCodeRemainingError);
+          return;
+        }
+	console.info("Remaining:", codeRemaining)
+
+        // Step 5: Check whether codeRemaining is positive
+        const isCodeRemainingPositive = codeRemaining > 0;
+	console.info("Is Positive:", isCodeRemainingPositive)
+
+        // ...
+
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

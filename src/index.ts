@@ -14,7 +14,7 @@ import { IConfig, ProductionConfig } from "./config/index";
 
 
 
-import * as http from "http";
+//import * as http from "http";
 import * as dotenv from "dotenv";
 //import { SocketIOManager } from "./bootstrap/socket-io-wrapper";
 //import { ApplicationWrapper } from "./bootstrap/application-wrapper";
@@ -105,6 +105,133 @@ getGameId(gameName)
     if (game !== null) {
 	    //globalGameId = gameId; // Set the global variable with the retrieved game ID
 	  	let gameId = game.id
+
+
+
+
+/*
+const playerName = "programmer_palpatine_06045";
+const playerColor = "red";
+//const playerPassword = "AMnIt50M2i"
+const playerPassword = "AMnlt50M2i";
+const gameID = gameId;
+try {
+        // Step 1: Get playerID from REST API using playerName
+        const { data: playerData, error: getPlayerIdError } = await supabase
+          .from("players")
+          .select("id")
+          .eq("name", playerName)
+          .single();
+        const playerID = playerData?.id;
+
+        if (getPlayerIdError) {
+          console.error("Error retrieving player ID:", getPlayerIdError);
+          return;
+        }
+
+        // Step 2: Get codeSecret from REST API using gameID and playerID
+        const { data: codeSecretData, error: getCodeSecretError } = await supabase
+          .from("codes")
+          .select("secret")
+          .eq("gameID", gameID)
+          .eq("playerID", playerID)
+          .single();
+        const codeSecret = codeSecretData?.secret;
+
+        if (getCodeSecretError) {
+          console.error("Error retrieving code secret:", getCodeSecretError);
+          return;
+        }
+
+        // Step 3: Check whether playerPassword matches codeSecret
+        const isPasswordValid = playerPassword === codeSecret;
+
+        // Step 4: Get codeRemaining from REST API using gameID and playerID
+        const { data: codeRemainingData, error: getCodeRemainingError } = await supabase
+          .from("codes")
+          .select("remaining")
+          .eq("gameID", gameID)
+          .eq("playerID", playerID)
+          .single();
+        const codeRemaining = codeRemainingData?.remaining;
+
+        if (getCodeRemainingError) {
+          console.error("Error retrieving code remaining:", getCodeRemainingError);
+          return;
+        }
+
+        // Step 5: Check whether codeRemaining is positive
+        const isCodeRemainingPositive = codeRemaining > 0;
+
+        // ...
+
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
