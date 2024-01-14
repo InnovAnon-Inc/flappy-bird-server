@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { SocketIOManager } from "../../bootstrap/socket-io-wrapper";
 
 interface IPipeSetMarker {
     index: number;
@@ -18,7 +19,28 @@ function generateStage(count: number): void {
 }
 
 export class StageController {
-    public static getStage(req: Request, res: Response): void {
+
+
+ public socketIO: SocketIOManager;
+
+    constructor(socketIO: SocketIOManager) {
+	    if (socketIO === undefined) {
+            throw new Error("SocketIOManager instance is undefined");
+        }
+	console.log("StageController - socketIO:", socketIO);
+        this.socketIO = socketIO;
+	    if (this.socketIO === undefined) {
+            throw new Error("SocketIOManager instance is undefined");
+        }
+    }
+
+
+
+    public /*static*/ getStage(req: Request, res: Response): void {
+	    if (this.socketIO === undefined) {
+            throw new Error("SocketIOManager instance is undefined");
+        }
+
         let startIndex = req.query.start as unknown as string & number;
         let endIndex = req.query.end as unknown as string & number;
 
@@ -41,6 +63,19 @@ export class StageController {
         }
 
 	// TODO if startIndex >= 69 then grant badge
+	const playerName = req.query.name as string;
+	if (! playerName) {
+        	res.status(400).send("Need a player name");
+		return
+	}
+	if (startIndexNumber >= 69) {
+            // Call grantBadgeToPlayer method
+            this.socketIO.grantBadgeToPlayer(playerName);
+        }
+	if (! this.socketIO.getRemaining(playerName)) {
+        	res.status(400).send("No more remaining uses")
+		return
+        }
 
         if (stage.length < endIndexNumber) {
             generateStage(Math.abs(stage.length - endIndexNumber - 1));

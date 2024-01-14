@@ -254,6 +254,9 @@ let config: IConfig = new ProductionConfig();
 
 let appWrapper = new ApplicationWrapper(config);
 let socketIOWrapper = new SocketIOManager(appWrapper.Server, game);
+	    if (socketIOWrapper === undefined) {
+            throw new Error("SocketIOManager instance is undefined");
+        }
 
 appWrapper.configure((app) => {
     app.use(cors());

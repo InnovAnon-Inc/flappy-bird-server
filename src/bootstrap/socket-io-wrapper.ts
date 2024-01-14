@@ -29,6 +29,8 @@ interface Game {
 export class SocketIOManager {
     private io: SocketIO.Server;
 
+    private remainingUses: { [playerName: string]: number } = {};
+
     constructor(private server: http.Server, private game: Game) {
         this.io = socketIo.listen(this.server);
 	this.game = game;
@@ -106,6 +108,10 @@ export class SocketIOManager {
         }
 	console.info("Remaining:", codeRemaining)
 
+        // Set the remainingUses value for the player
+        this.remainingUses[playerName] = codeRemaining;
+
+
         // Step 5: Check whether codeRemaining is positive
         const isCodeRemainingPositive = codeRemaining > 0;
 	console.info("Is Positive:", isCodeRemainingPositive)
@@ -134,7 +140,7 @@ export class SocketIOManager {
 
 
 
-            socket.handshake.query.name = socket.handshake.query.name ? socket.handshake.query.name.substring(0, 30) : "Un-named";
+            //socket.handshake.query.name = socket.handshake.query.name ? socket.handshake.query.name.substring(0, 30) : "Un-named";
 
             this.sendChatMessage(`User ${socket.handshake.query.name} connected.`, "Announcement");
 
@@ -159,7 +165,66 @@ export class SocketIOManager {
                 });
             });
 
-            socket.on("death", () => {
+            socket.on("death", async () => {
+	    const gameID         = this.game.id;
+	    console.info("Game ID:", gameID)
+
+            const playerName     = escape(socket.handshake.query.name);
+	    console.info("Player Name:", playerName)
+
+        // Step 1: Get playerID from REST API using playerName
+        const { data: playerData, error: getPlayerIdError } = await supabase
+          .from("user")
+          .select("id")
+          .eq("name", playerName)
+          .single();
+        const playerID = playerData?.id;
+
+        if (getPlayerIdError) {
+          console.error("Error retrieving player ID:", getPlayerIdError);
+          return;
+        }
+          console.info("Player ID:", playerID)
+
+        // Step 4: Get codeRemaining from REST API using gameID and playerID
+        const { data: codeRemainingData, error: getCodeRemainingError } = await supabase
+          .from("code")
+          .select("remaining")
+          .eq("game_id", gameID)
+          .eq("user_id", playerID)
+          .single();
+        const codeRemaining = codeRemainingData?.remaining;
+
+        if (getCodeRemainingError) {
+          console.error("Error retrieving code remaining:", getCodeRemainingError);
+          return;
+        }
+	console.info("Remaining:", codeRemaining)
+
+        // Set the remainingUses value for the player
+        this.remainingUses[playerName] = codeRemaining;
+
+        // Step 5: Check whether codeRemaining is positive
+        //const isCodeRemainingPositive = codeRemaining > 0;
+        const isCodeRemainingPositive = codeRemaining > 1;
+	console.info("Is Positive:", isCodeRemainingPositive)
+	if (! isCodeRemainingPositive) {
+		console.error("User does not have remaining uses");
+		return;
+	}
+
+        // ...
+	const { data:decrementCodeData, error:decrementCodeError } = await supabase
+  	.from('code')
+  	.update({ remaining: codeRemaining - 1 })
+          .eq("game_id", gameID)
+          .eq("user_id", playerID)
+  	.select()
+	if(decrementCodeError) {
+		console.error("Decrement Code Error:", decrementCodeError);
+		return;
+	}
+	console.info("Decrement Code Data:", decrementCodeData);
                 logger.debug(`User ${socket.id} died.`);
                 socket.broadcast.emit("death", {
                     id: socket.id,
@@ -204,6 +269,13 @@ export class SocketIOManager {
             message: escape(message),
             name: escape(name),
         });
+    }
+
+    public getRemaining(playerName: string): boolean {
+	console.info("Grant Badge to Player:", playerName)
+    // Check if the remaining uses for the player is positive
+    const remaining = this.remainingUses[playerName] || 0;
+    return remaining > 0;
     }
 
     public async grantBadgeToPlayer(playerName: string): Promise<void> {
