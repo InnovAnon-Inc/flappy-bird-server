@@ -22,3 +22,8 @@ Go to [https://InnovAnon-Inc.github.io/flappy-bird-client](https://InnovAnon-Inc
 Made with ♥ by Dolan Miu
 
 ![Corporate Logo](https://www.0xpepes.com/_next/image?url=%2Flogonew.png&w=96&q=75)
+
+
+## TODO
+- do something with `remaining uses check`
+- grant badge at specific stage

@@ -44,23 +44,16 @@ export class SocketIOManager {
 	    console.info("Player Name:", playerName)
 	    const playerColor    = escape(socket.handshake.query.color);
 	    console.info("Player Color:", playerColor)
-	    // TODO this should not be undefined
 	    const playerPassword = escape(socket.handshake.query.password);
 	    //assert(playerPassword)
 	    console.info("Player Password:", playerPassword)
-	    console.info("Secret:", socket.handshake.query.secret)
-	    console.info("Test:", socket.handshake.query.test)
-	    console.info("Foo:", socket.handshake.query.foo)
+	    //console.info("Secret:", socket.handshake.query.secret)
+	    //console.info("Test:", socket.handshake.query.test)
+	    //console.info("Foo:", socket.handshake.query.foo)
 	    const gameID         = this.game.id;
 	    console.info("Game ID:", gameID)
 
-            // TODO get playerID from REST API `user.id` using playerName
-	    // TODO get codeSecret from REST API `code.secret` using gameID, playerID
-	    // TODO check whether playerPassword matches codeSecret
-	    // TODO get codeRemaining from REST API `code.remaining` using gameID, playerID
-	    // TODO check whether codeRemaining is positive
-	    
-		try {
+//		try {
         // Step 1: Get playerID from REST API using playerName
         const { data: playerData, error: getPlayerIdError } = await supabase
           .from("user")
@@ -93,6 +86,10 @@ export class SocketIOManager {
         // Step 3: Check whether playerPassword matches codeSecret
         const isPasswordValid = playerPassword === codeSecret;
 	console.info("is password valid:", isPasswordValid)
+	if (! isPasswordValid) {
+		console.error("Invalid Access Code Secret");
+		return;
+	}
 
         // Step 4: Get codeRemaining from REST API using gameID and playerID
         const { data: codeRemainingData, error: getCodeRemainingError } = await supabase
@@ -112,26 +109,27 @@ export class SocketIOManager {
         // Step 5: Check whether codeRemaining is positive
         const isCodeRemainingPositive = codeRemaining > 0;
 	console.info("Is Positive:", isCodeRemainingPositive)
+	if (! isCodeRemainingPositive) {
+		console.error("User does not have remaining uses");
+		return;
+	}
 
         // ...
+	const { data:decrementCodeData, error:decrementCodeError } = await supabase
+  	.from('code')
+  	.update({ remaining: codeRemaining - 1 })
+          .eq("game_id", gameID)
+          .eq("user_id", playerID)
+  	.select()
+	if(decrementCodeError) {
+		console.error("Decrement Code Error:", decrementCodeError);
+		return;
+	}
+	console.info("Decrement Code Data:", decrementCodeData);
 
-      } catch (error) {
-        console.error("Error:", error.message);
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ //     } catch (error) {
+  //      console.error("Error:", error.message);
+   //   }
 
 
 
@@ -206,5 +204,37 @@ export class SocketIOManager {
             message: escape(message),
             name: escape(name),
         });
+    }
+
+    public async grantBadgeToPlayer(playerName: string): Promise<void> {
+	    console.info("Grant Badge to Player:", playerName)
+
+        const { data: playerData, error: getPlayerIdError } = await supabase
+          .from("user")
+          .select("id")
+          .eq("name", playerName)
+          .single();
+        const playerID = playerData?.id;
+
+        if (getPlayerIdError) {
+          console.error("Error retrieving player ID:", getPlayerIdError);
+          return;
+        }
+          console.info("Player ID:", playerID)
+
+
+
+	  const { data: badgeData, error:grantBadgeError } = await supabase
+  .from('badge')
+  .insert([
+    { user_id: playerID, game_id: this.game.id },
+  ])
+  .select()
+
+  	if (grantBadgeError) {
+		console.error("Error granting badge:", grantBadgeError);
+		return;
+	}
+	console.info("Grant badge data:", badgeData)
     }
 }

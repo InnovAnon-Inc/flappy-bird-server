@@ -40,6 +40,8 @@ export class StageController {
             return;
         }
 
+	// TODO if startIndex >= 69 then grant badge
+
         if (stage.length < endIndexNumber) {
             generateStage(Math.abs(stage.length - endIndexNumber - 1));
         }

@@ -258,7 +258,7 @@ let socketIOWrapper = new SocketIOManager(appWrapper.Server, game);
 appWrapper.configure((app) => {
     app.use(cors());
     logger.info("Configuring application routes");
-    let stageRouter = new StageRouter();
+    let stageRouter = new StageRouter(socketIOWrapper);
     app.use("/stage", stageRouter.router);
     let playerRouter = new PlayerRouter(socketIOWrapper);
     app.use("/players", playerRouter.router);
