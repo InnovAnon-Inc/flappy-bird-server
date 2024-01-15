@@ -5,7 +5,10 @@ import { SocketIOManager } from "../../bootstrap/socket-io-wrapper";
 export class StageRouter {
     public router: Router;
 
-    constructor(private socketIO : SocketIOManager) {
+    public socketIO : SocketIOManager;
+
+    //constructor(private socketIO : SocketIOManager) {
+    constructor(socketIO : SocketIOManager) {
 	    if (socketIO === undefined) {
             throw new Error("SocketIOManager instance is undefined");
         }

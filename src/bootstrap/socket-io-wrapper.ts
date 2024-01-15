@@ -121,6 +121,7 @@ export class SocketIOManager {
 	}
 
         // ...
+	/*
 	const { data:decrementCodeData, error:decrementCodeError } = await supabase
   	.from('code')
   	.update({ remaining: codeRemaining - 1 })
@@ -132,6 +133,7 @@ export class SocketIOManager {
 		return;
 	}
 	console.info("Decrement Code Data:", decrementCodeData);
+       */
 
  //     } catch (error) {
   //      console.error("Error:", error.message);
@@ -245,6 +247,7 @@ export class SocketIOManager {
                 this.sendChatMessage(message, socket.handshake.query.name);
             });
         });
+        this.remainingUses[playerName] = codeRemaining - 1;
     }
 
     public get currentPlayers(): Array<IPlayer> {
