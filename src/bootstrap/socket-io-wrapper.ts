@@ -227,6 +227,9 @@ export class SocketIOManager {
 		return;
 	}
 	console.info("Decrement Code Data:", decrementCodeData);
+
+        this.remainingUses[playerName] = codeRemaining - 1;
+
                 logger.debug(`User ${socket.id} died.`);
                 socket.broadcast.emit("death", {
                     id: socket.id,
@@ -247,7 +250,6 @@ export class SocketIOManager {
                 this.sendChatMessage(message, socket.handshake.query.name);
             });
         });
-        this.remainingUses[playerName] = codeRemaining - 1;
     }
 
     public get currentPlayers(): Array<IPlayer> {

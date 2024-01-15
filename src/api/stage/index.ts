@@ -18,6 +18,7 @@ export class StageRouter {
 
         this.router = Router();
 
-        this.router.get("/", new StageController(socketIO).getStage);
+        //this.router.get("/", new StageController(socketIO).getStage);
+	this.router.get("/", (req, res) => new StageController(this.socketIO).getStage(req, res));
     }
 }

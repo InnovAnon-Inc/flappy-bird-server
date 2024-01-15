@@ -37,10 +37,13 @@ export class StageController {
 
 
     public /*static*/ getStage(req: Request, res: Response): void {
+    //getStage = (req: Request, res: Response) => {
+	    console.info("get stage")
 	    // TODO wtf
-	    //if (this.socketIO === undefined) {
-            //throw new Error("SocketIOManager instance is undefined");
-        //}
+	if (this.socketIO === undefined) {
+		console.error("socketio is undefined")
+            throw new Error("SocketIOManager instance is undefined");
+        }
 
         let startIndex = req.query.start as unknown as string & number;
         let endIndex = req.query.end as unknown as string & number;
@@ -66,18 +69,21 @@ export class StageController {
 	// TODO if startIndex >= 69 then grant badge
 	const playerName = req.query.name as string;
 	if (! playerName) {
+		console.error("need a player name")
         	res.status(400).send("Need a player name");
 		return
 	}
 	// TODO wtf
-	//if (startIndexNumber >= 69) {
-        //    // Call grantBadgeToPlayer method
-        //    this.socketIO.grantBadgeToPlayer(playerName);
-        //}
-	//if (! this.socketIO.getRemaining(playerName)) {
-        //	res.status(400).send("No more remaining uses")
-	//	return
-        //}
+	if (startIndexNumber >= 69) {
+            // Call grantBadgeToPlayer method
+            console.info("grant badge to player:", playerName)
+            this.socketIO.grantBadgeToPlayer(playerName);
+        }
+	if (! this.socketIO.getRemaining(playerName)) {
+		console.info("no more remaining uses for:", playerName)
+        	res.status(400).send("No more remaining uses")
+		return
+        }
 
         if (stage.length < endIndexNumber) {
             generateStage(Math.abs(stage.length - endIndexNumber - 1));
